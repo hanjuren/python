@@ -81,7 +81,7 @@ print(s.find('e'))
 # print(s.index('a'))
 """
 Traceback (most recent call last):
-  File "/Users/hanjuryeon/study/python/jump_to_python/data_type/strint_type.py", line 81, in <module>
+  File "/Users/hanjuryeon/study/python/jump_to_python/ch2/strint_type.py", line 81, in <module>
     print(s.index('a'))
 ValueError: substring not found
 """
