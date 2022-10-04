@@ -1,6 +1,7 @@
+from django.http import HttpResponseNotAllowed
 from django.shortcuts import render, get_object_or_404, redirect
 from django.utils import timezone
-from .form import QuestionForm
+from .form import QuestionForm, AnswerForm
 
 from .models import Question
 
@@ -17,27 +18,34 @@ def index(request):
     return render(request, 'question_list.html', result)
 
 
-def detail(request, q_id):
+def detail(request, id_):
     """
     질문 상세
     """
-    question = get_object_or_404(Question, pk=q_id)
+    question = get_object_or_404(Question, pk=id_)
     result = {"question": question}
 
     return render(request, "question_detail.html", result)
 
 
-def answer_create(request, q_id):
+def answer_create(request, id_):
     """
     질문 답변 등록
     """
-    question = get_object_or_404(Question, pk=q_id)
-    question.answer_set.create(
-        content=request.POST.get('content'),
-        created_at=timezone.now(),
-    )
-
-    return redirect('pybo:detail', q_id=question.id)
+    question = get_object_or_404(Question, pk=id_)
+    if request.method != "POST":
+        return HttpResponseNotAllowed('Only POST is possible.')
+    else:
+        form = AnswerForm(request.POST)
+        if form.is_valid():
+            answer = form.save(commit=False)
+            answer.created_at = timezone.now()
+            answer.question = question
+            answer.save()
+            return redirect('pybo:detail', id_=question.id)
+        else:
+            context = {'question': question, 'form': form}
+            return render(request, 'question_detail.html', context)
 
 
 def question_create(request):
@@ -53,4 +61,4 @@ def question_create(request):
             return redirect('pybo:index')
     else:
         form = QuestionForm()
-        return render(request, 'question_form.html', {'form': form})
+    return render(request, 'question_form.html', {'form': form})
