@@ -19,9 +19,12 @@
                 {{ result.paginator.count|sub:result.start_index|sub:forloop.counter0|add:1 }}
             </td>
             <td>
-                <a href="{% url 'pybo:detail' question.id %}">
+                <a class="btn btn-default glyphicon glyphicon-download" href="{% url 'pybo:detail' question.id %}">
                     {{ question.subject }}
                 </a>
+                {% if question.answer_set.count > 0 %}
+                    <span class="text-danger small mx-2">{{ question.answer_set.count }}</span>
+                {% endif %}
             </td>
             <td>{{ question.created_at }}</td>
         </tr>
