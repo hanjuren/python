@@ -17,6 +17,11 @@ from django.contrib import admin
 from django.urls import path, re_path, include
 
 urlpatterns = [
+    path('', include('pybo.urls')),
+
     path('admin/', admin.site.urls),
-    re_path('^pybo/', include("pybo.urls", namespace="pybo"))
+
+    re_path('^pybo/', include("pybo.urls", namespace="pybo")),
+
+    path('common/', include('common.urls', namespace='common')),
 ]
