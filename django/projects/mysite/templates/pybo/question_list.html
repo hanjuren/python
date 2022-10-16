@@ -4,21 +4,22 @@
 <div class="container my-3">
     <table class="table">
         <thead>
-        <tr class="thead-dark">
+        <tr class="text-lg-center">
             <th>id</th>
-            <th>제목</th>
+            <th style="width:50%">제목</th>
+            <th>글쓴이</th>
             <th>작성일자</th>
         </tr>
         </thead>
         <tbody>
         {% if result %}
         {% for question in result %}
-        <tr>
+        <tr class="align-middle text-center">
             <td>
                 <!-- 번호 = 전체건수 - 시작인덱스 - 현재인덱스 + 1 -->
                 {{ result.paginator.count|sub:result.start_index|sub:forloop.counter0|add:1 }}
             </td>
-            <td>
+            <td class="text-lg-start">
                 <a class="btn btn-default glyphicon glyphicon-download" href="{% url 'pybo:detail' question.id %}">
                     {{ question.subject }}
                 </a>
@@ -26,6 +27,7 @@
                     <span class="text-danger small mx-2">{{ question.answer_set.count }}</span>
                 {% endif %}
             </td>
+            <td>{{ question.user.username }}</td>
             <td>{{ question.created_at }}</td>
         </tr>
         {% endfor %}
