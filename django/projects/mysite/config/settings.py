@@ -129,3 +129,42 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 LOGIN_REDIRECT_URL = '/'
 LOGOUT_REDIRECT_URL = '/'
+
+# log
+LOGGING = {
+    "version": 1,
+    "disable_existing_loggers": False,  # True일 경우 기본 logger 구성 비활성화
+    "formatters": {
+        "console": {
+            "format": '[%(asctime)s] %(levelname)s [%(name)s:%(funcName)s:%(lineno)s] %(message)s',
+            "datefmt": '%d/%b/%Y %H:%M:%S',
+        },
+        'sourcetrace': {
+            'format': '-'*80 + '\n%(asctime)s] [%(levelname)s] [%(name)s:%(funcName)s:%(lineno)s]\n%(sql)s\n' + '-'*80
+        },
+    },
+    "handlers": {
+        "console": {
+            "level": "DEBUG",
+            "class": "rich.logging.RichHandler",
+            # "formatter": "console",
+        },
+        "database": {
+            "level": "DEBUG",
+            "class": "rich.logging.RichHandler",
+            'rich_tracebacks': True
+            # "formatter": "sourcetrace",
+        },
+    },
+    "loggers": {
+        "default": {
+            "handlers": ['console'],
+            "level": "DEBUG",
+        },
+        "django.db.backends": {
+            "handlers": ['database'],
+            "level": "DEBUG",
+            "propagate": False
+        }
+    }
+}
