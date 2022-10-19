@@ -1,6 +1,6 @@
 from django.contrib import messages
 from django.http import HttpResponseNotAllowed
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import render, get_object_or_404, redirect, resolve_url
 from django.contrib.auth.decorators import login_required
 from django.utils import timezone
 
@@ -24,7 +24,9 @@ def answer_create(request, id_):
             answer.question = question
             answer.user = request.user
             answer.save()
-            return redirect('pybo:detail', id_=question.id)
+            return redirect('{}#answer_{}'.format(
+                resolve_url('pybo:detail', id_=question.id), answer.id
+            ))
         else:
             context = {'question': question, 'form': form}
             return render(request, 'pybo/question_detail.html', context)
@@ -43,7 +45,9 @@ def answer_update(request, id_):
             answer = form.save(commit=False)
             answer.updated_at = timezone.now()
             answer.save()
-            return redirect('pybo:detail', id_=answer.question_id)
+            return redirect('{}#answer_{}'.format(
+                resolve_url('pybo:detail', id_=answer.question_id), answer.id
+            ))
     else:
         form = AnswerForm(instance=answer)
     context = {'answer': answer, 'form': form}
@@ -67,4 +71,6 @@ def answer_vote(request, id_):
         messages.error(request, "본인 답변은 추천할 수 없습니다.")
     else:
         answer.voter.add(request.user)
-    return redirect('pybo:detail', id_=answer.question_id)
+    return redirect('{}#answer_{}'.format(
+        resolve_url('pybo:detail', id_=answer.question_id), answer.id
+    ))
