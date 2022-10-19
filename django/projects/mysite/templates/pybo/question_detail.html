@@ -1,6 +1,17 @@
 {% extends 'base.html' %}
 {% block content %}
 <div class="container my-3">
+    {% if messages %}
+    <div class="alert alert-danger my-3" role="alert">
+        {% for message in messages %}
+        <strong>{{ message.tags }}</strong>
+        <ul>
+            <li>{{ message.message }}</li>
+        </ul>
+        {% endfor %}
+    </div>
+    {% endif %}
+    <!-- 질문 -->
     <h2 class="border-bottom py-2">{{ question.subject }}</h2>
     <div class="card my-3">
         <div class="card-body">
@@ -22,13 +33,23 @@
                 </div>
             </div>
 
-            {% if request.user == question.user %}
+
                 <div class="my-3">
-                    <a href="{% url 'pybo:question_update' question.id %}" class="btn btn-sm btn-outline-secondary">수정</a>
-                    <a href="#" class="delete btn btn-sm btn-outline-secondary"
+                    <!-- 추천 -->
+                    <a href="javascript:void(0)" data-uri="{% url 'pybo:question_vote' question.id %}"
+                       class="recommend btn btn-sm btn-outline-secondary">
+                        추천
+                        <span class="badge rounded-pill bg-success">{{ question.voter.count }}</span>
+                    </a>
+
+                    {% if request.user == question.user %}
+
+                        <a href="{% url 'pybo:question_update' question.id %}" class="btn btn-sm btn-outline-secondary">수정</a>
+                        <a href="#" class="delete btn btn-sm btn-outline-secondary"
                     data-uri="{% url 'pybo:question_delete' question.id %}">삭제</a>
+
+                    {% endif %}
                 </div>
-            {% endif %}
         </div>
     </div>
     <h5 class="border-bottom my-3 py-2">
@@ -55,12 +76,20 @@
                     {{ answer.created_at }}
                 </div>
             </div>
-            {% if request.user == answer.user %}
+
             <div class="my-3">
+                <!-- 추천 -->
+                <a href="javascript:void(0)" data-uri="{% url 'pybo:answer_vote' answer.id %}"
+                   class="recommend btn btn-sm btn-outline-secondary">
+                    추천
+                    <span class="badge rounded-pill bg-success">{{ answer.voter.count }}</span>
+                </a>
+                <!-- 작성자, 작성일 -->
+                {% if request.user == answer.user %}
                 <a href="{% url 'pybo:answer_update' answer.id %}" class="btn btn-sm btn-outline-secondary">수정</a>
                 <a href="#" class="delete btn btn-sm btn-outline-secondary" data-uri="{% url 'pybo:answer_delete' answer.id%}">삭제</a>
+                {% endif %}
             </div>
-            {% endif %}
         </div>
     </div>
     {% endfor %}
@@ -95,6 +124,16 @@ $(document).ready(function (){
             location.href = $(this).data('uri');
         }
     });
-})
+});
+
+// 추천
+const recommend_elements = document.getElementsByClassName("recommend");
+Array.from(recommend_elements).forEach(function(element) {
+    element.addEventListener('click', function() {
+        if(confirm("정말로 추천하시겠습니까?")) {
+            location.href = this.dataset.uri;
+        }
+    });
+});
 </script>
 {% endblock %}

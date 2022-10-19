@@ -59,3 +59,14 @@ def question_delete(request, id_):
         return redirect('pybo:detail', id_=question.id)
     question.delete()
     return redirect('pybo:index')
+
+
+@login_required(login_url='common:login')
+def question_vote(request, id_):
+    print("hello vote")
+    question = get_object_or_404(Question, pk=id_)
+    if request.user == question.user:
+        messages.error(request, "본인의 글은 추천할 수 없습니다.")
+    else:
+        question.voter.add(request.user)
+    return redirect('pybo:detail', id_=question.id)
